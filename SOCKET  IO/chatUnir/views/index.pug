@@ -1,0 +1,44 @@
+extends layout
+
+block content
+    header
+        h1 Chat UNIR
+        h2 Usuarios: <span id="numUsuarios"></span>
+    main
+        ul#mensajes
+    footer 
+        div
+            label Nombre 
+            input#inputNombre(type="text")
+        div
+            label Mensaje 
+            input#inputMensaje(type="text")
+        button#btnEnviar Enviar
+    
+    script.
+        const socket = io();
+
+        const inputNombre = document.getElementById('inputNombre');
+        const inputMensaje = document.getElementById('inputMensaje');
+        const btnEnviar = document.getElementById('btnEnviar');
+        const mensajes = document.getElementById('mensajes');
+        const numUsuarios = document.getElementById('numUsuarios');
+
+        btnEnviar.addEventListener('click', ()=>{
+            const obj = {
+                nombre: inputNombre.value,
+                mensaje: inputMensaje.value
+            }
+            socket.emit('mensaje_chat', obj);
+        });
+
+        socket.on('mensaje_chat', (data) => {
+            const li = document.createElement('li');
+            li.innerText = `${data.nombre}: ${data.mensaje}`;
+
+            mensajes.append(li);
+        });
+
+        socket.on('usuarios_chat', (data)=>{
+            numUsuarios.innerText = data;
+        });
